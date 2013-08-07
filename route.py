@@ -20,6 +20,9 @@ from hashlib import md5
 from tornado.httpclient import HTTPClient, HTTPRequest
 
 
+ROUTE_ADDR = "https://192.168.1.1:8888"
+
+
 class HTTPHelper(object):
     """HTTP请求
     使用tornado.httpclient库.
@@ -73,7 +76,7 @@ class RouteLogin(object):
     def __init__(self, name, passwd, url=None, relogin=False):
         self._name = name
         self._passwd = passwd
-        self._url = url or "https://192.168.1.1/login.cgi"
+        self._url = url or "%s/login.cgi" % ROUTE_ADDR
         self._sessionid = None
         self._route_login(relogin)
         
@@ -148,7 +151,7 @@ class RouteHelper(object):
 
 
     def get_wan_ip(self):
-        client = HTTPHelper("https://192.168.1.1/", method="GET")
+        client = HTTPHelper("%s/" % ROUTE_ADDR, method="GET")
         response = client.fetch()
         pattern = r"MESS_RIGHT>([0-9]+(?:\.[0-9]+){3})<"
         ips = Regex.match(pattern, response.body, multi=True)
@@ -162,7 +165,7 @@ class RouteHelper(object):
             "fresh_rate": 0,
             "submit_button": "system",
             "submit_type": sub_type}
-        url = "https://192.168.1.1/apply.cgi;session_id=%s" % self._sessionid
+        url = "%s/apply.cgi;session_id=%s" % (ROUTE_ADDR, self._sessionid)
         client = HTTPHelper(url, method="POST", body=post)
         client.fetch()
 
